@@ -1,0 +1,2 @@
+,input_length,input_width,output_length,diff_order,max_epochs,learning_rate
+0,50,3,5,1,30,0.0001
