@@ -11,7 +11,7 @@ warnings.filterwarnings("ignore")
 
 class TimeSeriesDataset(Dataset):
 
-    def __init__(self, csv_file, column_names, x_len, y_len=1, diff_order = 0, train = True, frac=0.8, rand_seed = 100):
+    def __init__(self, csv_file, column_names, x_len, y_len=1, diff_order = 0, train = True, frac=0.8, rand_seed = 100, size=None):
         """
         Arguments:
             csv_file (string): Path to the csv file with annotations.
@@ -20,6 +20,9 @@ class TimeSeriesDataset(Dataset):
                 on a sample.
         """
         self.series_df = pd.read_csv(csv_file)[column_names]
+        if size:
+            self.series_df = self.series_df.iloc[:size]
+            
         self.x_len = x_len
         self.y_len = y_len
         

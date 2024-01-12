@@ -24,8 +24,8 @@ hidden_size = 50
 num_layers = 2
 
 
-train_ds = TimeSeriesDataset('sample_data.csv', input_cols, input_length, y_len = output_len, diff_order=diff_order, train=True)
-test_ds =  TimeSeriesDataset('sample_data.csv', input_cols, input_length, y_len = output_len, diff_order=diff_order, train=False)
+train_ds = TimeSeriesDataset('sample_data.csv', input_cols, input_length, y_len = output_len, diff_order=diff_order, train=True, size=10000)
+test_ds =  TimeSeriesDataset('sample_data.csv', input_cols, input_length, y_len = output_len, diff_order=diff_order, train=False, size=10000)
 
 train_loader = DataLoader(train_ds, batch_size = 64, shuffle=True)
 test_loader = DataLoader(test_ds, batch_size = 64, shuffle=True)
@@ -40,7 +40,7 @@ my_model = TransformerModel2(len(input_cols), input_length, output_length=output
 # my_model = LinearRegressionFlat(len(input_cols), input_length, output_length=output_len)
 optimizer = optim.Adam(my_model.parameters(), lr=1e-4)
 time = str(datetime.datetime.now())
-path = "experiments/" + my_model.name + "_" + time[:-7]
+path = "experiments/VK_" + my_model.name + "_" + time[:-7]
 path = path.replace(" ", "_")
 os.system(f"mkdir {path}")
 weights_path = path + "/weights.pt"

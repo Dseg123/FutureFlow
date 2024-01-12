@@ -40,8 +40,11 @@ class LinearRegression(nn.Module):
 
 
     def forward(self, x):
-
-        return torch.cat([self.linears[i](x[:, :, i]) for i in range(self.width)], 1)
+        a = self.linears[0](x[:, :, 0])
+        # print(torch.unsqueeze(a, 2).shape)
+        pred = torch.cat([torch.unsqueeze(self.linears[i](x[:, :, i]), 2) for i in range(self.width)], 2)
+        # print(pred.shape)
+        return pred
     
     
 class LinearRegressionFlat(nn.Module):
@@ -157,6 +160,9 @@ class LSTMModel(nn.Module):
             y[:, :-1, :] = y[:, 1:, :]
             y[:, -1, :] = out
 
+            # print(y.shape)
+            # print(out.shape)
+
         return final
 
 
@@ -218,7 +224,7 @@ class TransformerModel(nn.Module):
         skip_final = torch.reshape(self.skip(torch.reshape(x[:, -self.context_length:, :], (-1, self.width * self.context_length))), (-1, self.output_length, self.width))
         
         cat_finals = torch.cat((trans_final, skip_final), 2)
-        print(cat_finals.shape)
+        # print(cat_finals.shape)
         final = self.last(cat_finals)
         
         

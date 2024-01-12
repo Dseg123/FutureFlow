@@ -14,15 +14,19 @@ from dataset import TimeSeriesDataset, TimeSeriesAvgDataset
 from models import *
 from losses import *
 
-input_length = 100
+input_length = 50
 input_cols = ['u', 'v', 'w']
 learning_rate = 1e-4
-max_epochs = 30
-output_len = 1
+max_epochs = 60
+output_len = 10
 diff_order = 0
 hidden_size = 50
 num_layers = 2
+layer_sizes = [32, 32, 32]
 
+
+# train_ds = TimeSeriesDataset('sample_data.csv', input_cols, input_length, y_len = output_len, diff_order=diff_order, train=True, size=10000)
+# test_ds =  TimeSeriesDataset('sample_data.csv', input_cols, input_length, y_len = output_len, diff_order=diff_order, train=False, size=10000)
 
 train_ds = TimeSeriesDataset('sample_data.csv', input_cols, input_length, y_len = output_len, diff_order=diff_order, train=True)
 test_ds =  TimeSeriesDataset('sample_data.csv', input_cols, input_length, y_len = output_len, diff_order=diff_order, train=False)
@@ -31,21 +35,22 @@ train_loader = DataLoader(train_ds, batch_size = 64, shuffle=True)
 test_loader = DataLoader(test_ds, batch_size = 64, shuffle=True)
 
 print(len(train_loader))
-df = pd.read_csv('von_karman_data.csv')
-print(len(df))
+# df = pd.read_csv('von_karman_data.csv')
+# print(len(df))
 tpm = np.load('tpm.npy')
+# my_model = NaiveModel(len(input_cols), input_length, output_length=output_len)
 # my_model = RecurrentModel(len(input_cols), input_length, output_length=output_len, hidden_size=hidden_size, num_layers=num_layers)
 
 # my_model = LinearRegression(len(input_cols), input_length, output_length=output_len)
 # my_model = ANNMCModel(len(input_cols), input_length, tpm, output_length=output_len)
 # my_model = LSTMModel(len(input_cols), input_length, output_length=output_len, hidden_size=hidden_size, num_layers=num_layers)
-#my_model = TransformerModel(len(input_cols), input_length, output_length=output_len, hidden_size=hidden_size, num_layers=num_layers, lags=True)
-my_model = LinearRegressionFlat(len(input_cols), input_length, output_length=output_len)
-# my_model = DeepRegression(len(input_cols), input_length, output_length=output_len)
+# my_model = TransformerModel(len(input_cols), input_length, output_length=output_len, hidden_size=hidden_size, num_layers=num_layers, lags=True)
+# my_model = LinearRegressionFlat(len(input_cols), input_length, output_length=output_len)
+my_model = DeepRegression(len(input_cols), input_length, output_length=output_len, layer_sizes=layer_sizes)
 if my_model.name != "Naive":
     optimizer = optim.Adam(my_model.parameters(), lr=1e-4)
 time = str(datetime.datetime.now())
-path = "experiments/" + my_model.name + "_" + time[:-7]
+path = "experiments/Big_1_" + my_model.name + "_" + time[:-7]
 path = path.replace(" ", "_")
 os.system(f"mkdir {path}")
 weights_path = path + "/weights.pt"
@@ -58,7 +63,8 @@ params = {"input_length": [input_length],
           "max_epochs": [max_epochs], 
           "learning_rate": [learning_rate],
           "hidden_size": [hidden_size],
-          "num_layers": [num_layers]}
+          "num_layers": [num_layers],
+          "layer_sizes": "x".join([str(s) for s in layer_sizes])}
 params_df = pd.DataFrame(params)
 params_df.to_csv(params_path)
 
@@ -129,6 +135,6 @@ for epoch in range(num_epochs):
         torch.save(my_model.state_dict(), weights_path)
     
     pd.DataFrame.from_dict({'epochs': epochs, 'train_losses': train_losses, 'test_losses': test_losses}).to_csv(log_path, index=False)
-    if epoch > 1 and abs(train_losses[-1] - train_losses[-2]) < 0.0001:
-        break
+    # if epoch > 1 and abs(train_losses[-1] - train_losses[-2]) < 0.0001:
+    #     break
 

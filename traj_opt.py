@@ -79,7 +79,7 @@ def optimal_traj(targ_x, x0, v0, num_steps, dt, max_u, force_weight = 0, winds =
     P = sparse.csc_matrix(P)
 
     prob = osqp.OSQP()
-    prob.setup(P, q, A, l, u, alpha=1.0)
+    prob.setup(P, q, A, l, u, alpha=1.0, verbose=False)
 
     res = prob.solve()
 

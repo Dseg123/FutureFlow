@@ -51,15 +51,21 @@ def get_preds(model, data_df, input_length, input_cols, thresh = 2000):
         y_ten = torch.tensor(y).float()
         
         pred = (model(X_ten)).detach().numpy()
+        print(pred.shape)
+        pred = pred[0, 0, :]
+        print(pred.shape)
         pred = pred.tolist()
         true = y_ten.numpy()
         true = true.tolist()
         preds.append(pred)
         trues.append(true)
         # preds = np.concatenate((preds, pred), axis=0)
-    return preds, trues
+    print(np.array(preds).shape)
+    print("preds", preds)
+    print("trues", trues)
+    return preds[1:], trues[1:]
 
-def get_preds(model, data_df, input_length, input_cols, thresh = 2000):
+def get_preds_avg(model, data_df, input_length, input_cols, thresh = 2000):
     arr = data_df[input_cols].to_numpy()
     preds = []
     trues = []
